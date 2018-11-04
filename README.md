@@ -1,3 +1,5 @@
+**Cassadra Java connection**
+
 1. Overview
 This tutorial is an introductory guide to the Apache Cassandra database using Java.
 
@@ -21,20 +23,23 @@ Column – A column in Cassandra is a data structure which contains a column nam
 3.1. Maven Dependency
 We need to define the following Cassandra dependency in the pom.xml, the latest version of which can be found here:
 
-
+```
 <dependency>
     <groupId>com.datastax.cassandra</groupId>
     <artifactId>cassandra-driver-core</artifactId>
     <version>3.1.0</version>
 </dependency>
+```
 
 In order to test the code with an embedded database server we should also add the cassandra-unit dependency, the latest version of which can be found here:
 
+```
 <dependency>
     <groupId>org.cassandraunit</groupId>
     <artifactId>cassandra-unit</artifactId>
     <version>3.0.0.1</version>
 </dependency>
+```
 
 3.2. Connecting to Cassandra
 In order to connect to Cassandra from Java, we need to build a Cluster object.
@@ -43,7 +48,7 @@ An address of a node needs to be provided as a contact point. If we don’t prov
 
 These settings allow the driver to discover the current topology of a cluster.
 
-
+```java
 public class CassandraConnector {
  
     private Cluster cluster;
@@ -69,11 +74,13 @@ public class CassandraConnector {
         cluster.close();
     }
 }
+```
 
 
 3.3. Creating the Keyspace
 Let’s create our “library” keyspace:
 
+```java
 public void createKeyspace(
   String keyspaceName, String replicationStrategy, int replicationFactor) {
   StringBuilder sb = 
@@ -86,7 +93,7 @@ public void createKeyspace(
     String query = sb.toString();
     session.execute(query);
 }
-
+```
 
 Except from the keyspaceName we need to define two more parameters, the replicationFactor and the replicationStrategy. These parameters determine the number of replicas and how the replicas will be distributed across the ring, respectively.
 
@@ -94,7 +101,7 @@ With replication Cassandra ensures reliability and fault tolerance by storing co
 
 At this point we may test that our keyspace has successfully been created:
 
-
+```
 private KeyspaceRepository schemaRepository;
 private Session session;
  
@@ -105,7 +112,9 @@ public void connect() {
     this.session = client.getSession();
     schemaRepository = new KeyspaceRepository(session);
 }
+```
 
+```
 @Test
 public void whenCreatingAKeyspace_thenCreated() {
     String keyspaceName = "library";
@@ -123,13 +132,13 @@ public void whenCreatingAKeyspace_thenCreated() {
     assertEquals(matchedKeyspaces.size(), 1);
     assertTrue(matchedKeyspaces.get(0).equals(keyspaceName.toLowerCase()));
 }
-
+```
 
 3.4. Creating a Column Family
 Now, we can add the first Column Family “books” to the existing keyspace:
 
 
-
+```
 private static final String TABLE_NAME = "books";
 private Session session;
  
@@ -143,11 +152,11 @@ public void createTable() {
     String query = sb.toString();
     session.execute(query);
 }
-
+```
 
 The code to test that the Column Family has been created, is provided below:
 
-
+```
 private BookRepository bookRepository;
 private Session session;
  
@@ -158,7 +167,8 @@ public void connect() {
     this.session = client.getSession();
     bookRepository = new BookRepository(session);
 }
-
+```
+```
 @Test
 public void whenCreatingATable_thenCreatedCorrectly() {
     bookRepository.createTable();
@@ -176,12 +186,12 @@ public void whenCreatingATable_thenCreatedCorrectly() {
     assertTrue(columnNames.contains("title"));
     assertTrue(columnNames.contains("subject"));
 }
-
+```
 
 3.5. Altering the Column Family
 A book has also a publisher, but no such column can be found in the created table. We can use the following code to alter the table and add a new column:
 
-
+```
 public void alterTablebooks(String columnName, String columnType) {
     StringBuilder sb = new StringBuilder("ALTER TABLE ")
       .append(TABLE_NAME).append(" ADD ")
@@ -191,11 +201,11 @@ public void alterTablebooks(String columnName, String columnType) {
     String query = sb.toString();
     session.execute(query);
 }
-
+```
 
 Let’s make sure that the new column publisher has been added:
 
-
+```
 @Test
 public void whenAlteringTable_thenAddedColumnExists() {
     bookRepository.createTable();
@@ -210,11 +220,12 @@ public void whenAlteringTable_thenAddedColumnExists() {
          
     assertTrue(columnExists);
 }
-
+```
 
 3.6. Inserting data in the Column Family
 Now that the books table has been created, we are ready to start adding data to the table:
 
+```
 public void insertbookByTitle(Book book) {
     StringBuilder sb = new StringBuilder("INSERT INTO ")
       .append(TABLE_NAME_BY_TITLE).append("(id, title) ")
@@ -224,11 +235,12 @@ public void insertbookByTitle(Book book) {
     String query = sb.toString();
     session.execute(query);
 }
+```
 
 
 A new row has been added in the ‘books’ table, so we can test if the row exists:
 
-
+```
 @Test
 public void whenAddingANewBook_thenBookExists() {
     bookRepository.createTableBooksByTitle();
@@ -240,9 +252,11 @@ public void whenAddingANewBook_thenBookExists() {
     Book savedBook = bookRepository.selectByTitle(title);
     assertEquals(book.getTitle(), savedBook.getTitle());
 }
+```
+
 In the test code above we have used a different method to create a table named booksByTitle:
 
-
+```
 public void createTableBooksByTitle() {
     StringBuilder sb = new StringBuilder("CREATE TABLE IF NOT EXISTS ")
       .append("booksByTitle").append("(")
@@ -253,6 +267,7 @@ public void createTableBooksByTitle() {
     String query = sb.toString();
     session.execute(query);
 }
+```
 
 
 In Cassandra one of the best practices is to use one-table-per-query pattern. This means, for a different query a different table is needed.
@@ -263,7 +278,7 @@ This way, many of the tables in your data model contain duplicate data. This is 
 
 Let’s see the data that are currently saved in our table:
 
-
+```
 public List<Book> selectAll() {
     StringBuilder sb = 
       new StringBuilder("SELECT * FROM ").append(TABLE_NAME);
@@ -281,10 +296,11 @@ public List<Book> selectAll() {
     });
     return books;
 }
-
+```
 
 A test for query returning expected results:
 
+```
 @Test
 public void whenSelectingAll_thenReturnAllRecords() {
     bookRepository.createTable();
@@ -305,7 +321,7 @@ public void whenSelectingAll_thenReturnAllRecords() {
     assertTrue(books.stream().anyMatch(b -> b.getTitle()
       .equals("Clean Code")));
 }
-
+```
 
 Everything is fine till now, but one thing has to be realized. We started working with table books, but in the meantime, in order to satisfy the select query by title column, we had to create another table named booksByTitle.
 
@@ -315,6 +331,7 @@ We can solve this using a batch query, which comprises two insert statements, on
 
 An example of such query is provided:
 
+```
 public void insertBookBatch(Book book) {
     StringBuilder sb = new StringBuilder("BEGIN BATCH ")
       .append("INSERT INTO ").append(TABLE_NAME)
@@ -331,10 +348,11 @@ public void insertBookBatch(Book book) {
     String query = sb.toString();
     session.execute(query);
 }
-
+```
 
 Again we test the batch query results like so:
 
+```
 @Test
 public void whenAddingANewBookBatch_ThenBookAddedInAllTables() {
     bookRepository.createTable();
@@ -359,13 +377,14 @@ public void whenAddingANewBookBatch_ThenBookAddedInAllTables() {
       booksByTitle.stream().anyMatch(
         b -> b.getTitle().equals("Effective Java")));
 }
-
+```
 
 Note: As of version 3.0, a new feature called “Materialized Views” is available , which we may use instead of batch queries. A well-documented example for “Materialized Views” is available here.
 
 3.7. Deleting the Column Family
 The code below shows how to delete a table:
 
+```
 public void deleteTable() {
     StringBuilder sb = 
       new StringBuilder("DROP TABLE IF EXISTS ").append(TABLE_NAME);
@@ -373,10 +392,11 @@ public void deleteTable() {
     String query = sb.toString();
     session.execute(query);
 }
-
+```
 
 Selecting a table that does not exist in the keyspace results in an InvalidQueryException: unconfigured table books:
 
+```
 @Test(expected = InvalidQueryException.class)
 public void whenDeletingATable_thenUnconfiguredTable() {
     bookRepository.createTable();
@@ -384,11 +404,12 @@ public void whenDeletingATable_thenUnconfiguredTable() {
         
     session.execute("SELECT * FROM " + KEYSPACE_NAME + ".books;");
 }
-
+```
 
 3.8. Deleting the Keyspace
 Finally, let’s delete the keyspace:
 
+```
 public void deleteKeyspace(String keyspaceName) {
     StringBuilder sb = 
       new StringBuilder("DROP KEYSPACE ").append(keyspaceName);
@@ -396,11 +417,12 @@ public void deleteKeyspace(String keyspaceName) {
     String query = sb.toString();
     session.execute(query);
 }
+```
 
 
 And test that the keyspace has been deleted:
 
-
+```
 @Test
 public void whenDeletingAKeyspace_thenDoesNotExist() {
     String keyspaceName = "library";
@@ -413,3 +435,4 @@ public void whenDeletingAKeyspace_thenDoesNotExist() {
          
     assertFalse(isKeyspaceCreated);
 }
+```
