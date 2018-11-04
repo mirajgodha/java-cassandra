@@ -23,7 +23,7 @@ Column – A column in Cassandra is a data structure which contains a column nam
 3.1. Maven Dependency
 We need to define the following Cassandra dependency in the pom.xml, the latest version of which can be found here:
 
-```
+```xml
 <dependency>
     <groupId>com.datastax.cassandra</groupId>
     <artifactId>cassandra-driver-core</artifactId>
@@ -33,7 +33,7 @@ We need to define the following Cassandra dependency in the pom.xml, the latest 
 
 In order to test the code with an embedded database server we should also add the cassandra-unit dependency, the latest version of which can be found here:
 
-```
+```xml
 <dependency>
     <groupId>org.cassandraunit</groupId>
     <artifactId>cassandra-unit</artifactId>
@@ -101,7 +101,7 @@ With replication Cassandra ensures reliability and fault tolerance by storing co
 
 At this point we may test that our keyspace has successfully been created:
 
-```
+```java
 private KeyspaceRepository schemaRepository;
 private Session session;
  
@@ -114,7 +114,7 @@ public void connect() {
 }
 ```
 
-```
+```java
 @Test
 public void whenCreatingAKeyspace_thenCreated() {
     String keyspaceName = "library";
@@ -138,7 +138,7 @@ public void whenCreatingAKeyspace_thenCreated() {
 Now, we can add the first Column Family “books” to the existing keyspace:
 
 
-```
+```java
 private static final String TABLE_NAME = "books";
 private Session session;
  
@@ -156,7 +156,7 @@ public void createTable() {
 
 The code to test that the Column Family has been created, is provided below:
 
-```
+```java
 private BookRepository bookRepository;
 private Session session;
  
@@ -168,7 +168,8 @@ public void connect() {
     bookRepository = new BookRepository(session);
 }
 ```
-```
+
+```java
 @Test
 public void whenCreatingATable_thenCreatedCorrectly() {
     bookRepository.createTable();
@@ -191,7 +192,7 @@ public void whenCreatingATable_thenCreatedCorrectly() {
 3.5. Altering the Column Family
 A book has also a publisher, but no such column can be found in the created table. We can use the following code to alter the table and add a new column:
 
-```
+```java
 public void alterTablebooks(String columnName, String columnType) {
     StringBuilder sb = new StringBuilder("ALTER TABLE ")
       .append(TABLE_NAME).append(" ADD ")
@@ -205,7 +206,7 @@ public void alterTablebooks(String columnName, String columnType) {
 
 Let’s make sure that the new column publisher has been added:
 
-```
+```java
 @Test
 public void whenAlteringTable_thenAddedColumnExists() {
     bookRepository.createTable();
@@ -225,7 +226,7 @@ public void whenAlteringTable_thenAddedColumnExists() {
 3.6. Inserting data in the Column Family
 Now that the books table has been created, we are ready to start adding data to the table:
 
-```
+```java
 public void insertbookByTitle(Book book) {
     StringBuilder sb = new StringBuilder("INSERT INTO ")
       .append(TABLE_NAME_BY_TITLE).append("(id, title) ")
@@ -240,7 +241,7 @@ public void insertbookByTitle(Book book) {
 
 A new row has been added in the ‘books’ table, so we can test if the row exists:
 
-```
+```java
 @Test
 public void whenAddingANewBook_thenBookExists() {
     bookRepository.createTableBooksByTitle();
@@ -256,7 +257,7 @@ public void whenAddingANewBook_thenBookExists() {
 
 In the test code above we have used a different method to create a table named booksByTitle:
 
-```
+```java
 public void createTableBooksByTitle() {
     StringBuilder sb = new StringBuilder("CREATE TABLE IF NOT EXISTS ")
       .append("booksByTitle").append("(")
@@ -278,7 +279,7 @@ This way, many of the tables in your data model contain duplicate data. This is 
 
 Let’s see the data that are currently saved in our table:
 
-```
+```java
 public List<Book> selectAll() {
     StringBuilder sb = 
       new StringBuilder("SELECT * FROM ").append(TABLE_NAME);
@@ -300,7 +301,7 @@ public List<Book> selectAll() {
 
 A test for query returning expected results:
 
-```
+```java
 @Test
 public void whenSelectingAll_thenReturnAllRecords() {
     bookRepository.createTable();
@@ -331,7 +332,7 @@ We can solve this using a batch query, which comprises two insert statements, on
 
 An example of such query is provided:
 
-```
+```java
 public void insertBookBatch(Book book) {
     StringBuilder sb = new StringBuilder("BEGIN BATCH ")
       .append("INSERT INTO ").append(TABLE_NAME)
@@ -352,7 +353,7 @@ public void insertBookBatch(Book book) {
 
 Again we test the batch query results like so:
 
-```
+```java
 @Test
 public void whenAddingANewBookBatch_ThenBookAddedInAllTables() {
     bookRepository.createTable();
@@ -384,7 +385,7 @@ Note: As of version 3.0, a new feature called “Materialized Views” is availa
 3.7. Deleting the Column Family
 The code below shows how to delete a table:
 
-```
+```java
 public void deleteTable() {
     StringBuilder sb = 
       new StringBuilder("DROP TABLE IF EXISTS ").append(TABLE_NAME);
@@ -396,7 +397,7 @@ public void deleteTable() {
 
 Selecting a table that does not exist in the keyspace results in an InvalidQueryException: unconfigured table books:
 
-```
+```java
 @Test(expected = InvalidQueryException.class)
 public void whenDeletingATable_thenUnconfiguredTable() {
     bookRepository.createTable();
@@ -409,7 +410,7 @@ public void whenDeletingATable_thenUnconfiguredTable() {
 3.8. Deleting the Keyspace
 Finally, let’s delete the keyspace:
 
-```
+```java
 public void deleteKeyspace(String keyspaceName) {
     StringBuilder sb = 
       new StringBuilder("DROP KEYSPACE ").append(keyspaceName);
@@ -422,7 +423,7 @@ public void deleteKeyspace(String keyspaceName) {
 
 And test that the keyspace has been deleted:
 
-```
+```java
 @Test
 public void whenDeletingAKeyspace_thenDoesNotExist() {
     String keyspaceName = "library";
