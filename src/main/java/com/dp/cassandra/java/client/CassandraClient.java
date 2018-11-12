@@ -15,7 +15,7 @@ public class CassandraClient {
         ReadPropertiesFile objPropertiesFile = new ReadPropertiesFile();
         
         /* Will give you 'null' in case key not available */
-        System.out.println("Connecting to Database on: "+ objPropertiesFile.readKey("host"));
+        System.out.println("Connecting to Database on: "+ objPropertiesFile.readKey("host","127.0.0.1"));
       
         
         CassandraConnector connector = new CassandraConnector();
@@ -39,11 +39,11 @@ public class CassandraClient {
         br.selectAll().forEach(o ->  System.out.println("Title in books: " + o.getTitle()));
         br.selectAllBookByTitle().forEach(o ->  System.out.println("Title in booksByTitle: " + o.getTitle()));
 
-        br.deletebookByTitle("Effective Java");
-        br.deleteTable("books");
-        br.deleteTable("booksByTitle");
-
-        sr.deleteKeyspace("library");
+//        br.deletebookByTitle("Effective Java");
+//        br.deleteTable("books");
+//        br.deleteTable("booksByTitle");
+//
+//        sr.deleteKeyspace("library");
 
         connector.close();
     }
