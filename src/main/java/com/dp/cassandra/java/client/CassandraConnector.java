@@ -1,7 +1,5 @@
 package com.dp.cassandra.java.client;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Cluster.Builder;
@@ -15,7 +13,6 @@ import com.datastax.driver.core.Session;
  *
  */
 public class CassandraConnector {
-    private static final Logger LOG = LoggerFactory.getLogger(CassandraConnector.class);
 
     private Cluster cluster;
 
@@ -31,10 +28,10 @@ public class CassandraConnector {
         cluster = b.build();
 
         Metadata metadata = cluster.getMetadata();
-        LOG.info("Cluster name: " + metadata.getClusterName());
+        System.out.println("Cluster name: " + metadata.getClusterName());
 
         for (Host host : metadata.getAllHosts()) {
-            LOG.info("Datacenter: " + host.getDatacenter() + " Host: " + host.getAddress() + " Rack: " + host.getRack());
+        	 System.out.println("Datacenter: " + host.getDatacenter() + " Host: " + host.getAddress() + " Rack: " + host.getRack());
         }
 
         session = cluster.connect();

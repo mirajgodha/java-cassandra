@@ -1,8 +1,5 @@
 package com.dp.cassandra.java.client;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.datastax.driver.core.Session;
 import com.datastax.driver.core.utils.UUIDs;
 import com.dp.cassandra.java.client.domain.Book;
@@ -11,7 +8,6 @@ import com.dp.cassandra.java.client.repository.KeyspaceRepository;
 import com.dp.common.ReadPropertiesFile;
 
 public class CassandraClient {
-    private static final Logger LOG = LoggerFactory.getLogger(CassandraClient.class);
 
     public static void main(String args[]) {
     	
@@ -24,7 +20,7 @@ public class CassandraClient {
         
         CassandraConnector connector = new CassandraConnector();
       	
-        connector.connect(objPropertiesFile.readKey("host"), null);
+        connector.connect(objPropertiesFile.readKey("host","127.0.0.1"), null);
         Session session = connector.getSession();
 
         KeyspaceRepository sr = new KeyspaceRepository(session);
@@ -40,8 +36,8 @@ public class CassandraClient {
         Book book = new Book(UUIDs.timeBased(), "Effective Java", "Joshua Bloch", "Programming");
         br.insertBookBatch(book);
 
-        br.selectAll().forEach(o -> LOG.info("Title in books: " + o.getTitle()));
-        br.selectAllBookByTitle().forEach(o -> LOG.info("Title in booksByTitle: " + o.getTitle()));
+        br.selectAll().forEach(o ->  System.out.println("Title in books: " + o.getTitle()));
+        br.selectAllBookByTitle().forEach(o ->  System.out.println("Title in booksByTitle: " + o.getTitle()));
 
         br.deletebookByTitle("Effective Java");
         br.deleteTable("books");
