@@ -33,6 +33,7 @@ public class ReadPropertiesFile {
 				InputStream is = this.getClass().getResourceAsStream(propertiesFilename);
 				if(is != null) 
 				    commonProperties.load(is);
+				else return defaultValue;
 				
 //				System.out.println("------" +is);
 //				/* Read file from resources folder */
