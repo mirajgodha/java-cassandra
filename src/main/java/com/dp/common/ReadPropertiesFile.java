@@ -3,6 +3,7 @@ package com.dp.common;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Properties;
 
 public class ReadPropertiesFile {
@@ -10,11 +11,11 @@ public class ReadPropertiesFile {
 	/* Create basic object */
 	ClassLoader objClassLoader = null;
 	Properties commonProperties = new Properties();
-	String fileName = "common.properties";
+	String fileName = "dev/common.properties";
 
 	public ReadPropertiesFile() {
 		/* Initialize 'objClassLoader' once so same object used for multiple files. */
-		objClassLoader = getClass().getClassLoader();
+		objClassLoader = this.getClass().getClassLoader();
 	}
 
 	public String readKey(String propertiesFilename, String key, String defaultValue) {
@@ -29,12 +30,17 @@ public class ReadPropertiesFile {
 			 * 1.7 or above
 			 */
 			try {
-				/* Read file from resources folder */
-				objFileInputStream = new FileInputStream(objClassLoader.getResource(propertiesFilename).getFile());
-				/* Load file into commonProperties */
-				commonProperties.load(objFileInputStream);
-				/* Get the value of key */
-				return String.valueOf(commonProperties.get(key));
+				InputStream is = this.getClass().getResourceAsStream(propertiesFilename);
+				if(is != null) 
+				    commonProperties.load(is);
+				
+//				System.out.println("------" +is);
+//				/* Read file from resources folder */
+//				objFileInputStream = new FileInputStream(objClassLoader.getResource(propertiesFilename).getFile());
+//				/* Load file into commonProperties */
+//				commonProperties.load(objFileInputStream);
+//				/* Get the value of key */
+				return String.valueOf(commonProperties.get(key)) == null ? defaultValue : String.valueOf(commonProperties.get(key)) ;
 			} catch (FileNotFoundException ex) {
 				ex.printStackTrace();
 			} catch (IOException ex) {
@@ -54,11 +60,11 @@ public class ReadPropertiesFile {
 	}
 
 	public String readKey(String key) {
-		return readKey(fileName, key,null);
+		return readKey(fileName, key, null);
 	}
-	
-	public String readKey(String key,String defalutValue) {
-		return readKey(fileName, key,defalutValue);
+
+	public String readKey(String key, String defalutValue) {
+		return readKey(fileName, key, defalutValue);
 	}
 
 	public static void main(String[] args) {
@@ -73,16 +79,13 @@ public class ReadPropertiesFile {
 		System.out.println("Username: " + objPropertiesFile.readKey("username"));
 
 		try {
-			while (true) {
-				/* Print the password from commom.properties file */
-				System.out.println("Password: " + objPropertiesFile.readKey("password"));
+			/* Print the password from commom.properties file */
+			System.out.println("Password: " + objPropertiesFile.readKey("password"));
 
-				/*
-				 * Put the current thread in sleep for 5 seconds and change the value of
-				 * 'password'
-				 */
-				Thread.sleep(5000);
-			}
+			/*
+			 * Put the current thread in sleep for 5 seconds and change the value of
+			 * 'password'
+			 */
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
