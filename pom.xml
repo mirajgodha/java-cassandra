@@ -38,7 +38,7 @@
 					<!-- MainClass in mainfest make a executable jar -->
 					<archive>
 					  <manifest>
-						<mainClass>com.mkyong.core.utils.App</mainClass>
+						<mainClass>com.dp.cassandra.java.client.CassandraClient</mainClass>
 					  </manifest>
 					</archive>
 
