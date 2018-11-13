@@ -39,11 +39,11 @@ public class CassandraClient {
         br.selectAll().forEach(o ->  System.out.println("Title in books: " + o.getTitle()));
         br.selectAllBookByTitle().forEach(o ->  System.out.println("Title in booksByTitle: " + o.getTitle()));
 
-//        br.deletebookByTitle("Effective Java");
-//        br.deleteTable("books");
-//        br.deleteTable("booksByTitle");
-//
-//        sr.deleteKeyspace("library");
+        br.deletebookByTitle("Effective Java");
+        br.deleteTable("books");
+        br.deleteTable("booksByTitle");
+
+        sr.deleteKeyspace("library");
 
         connector.close();
     }
