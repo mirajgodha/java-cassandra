@@ -14,7 +14,7 @@ public class CassandraClient {
     	  /* Create object of ReadResourceFile */
         ReadPropertiesFile objPropertiesFile = new ReadPropertiesFile();
         
-        /* Will give you 'null' in case key not available */
+        /* Will give you 'null' in case key not available  */
         System.out.println("Connecting to Database on: "+ objPropertiesFile.readKey("host","127.0.0.1"));
       
         
