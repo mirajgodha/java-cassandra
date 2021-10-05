@@ -15,7 +15,7 @@ This makes Cassandra a horizontally scalable system by allowing for the incremen
 2.1. Key Concepts
 Let’s start with a short survey of some of the key concepts of Cassandra:
 
-Cluster – a collection of nodes or Data Centers arranged in a ring architecture. A name must be assigned to every cluster, which will subsequently be used by the participating nodes
+Cluster – a collection of nodes or Data Centers arranged in a ring architecture. A name must be assigned to every cluster, which will subsequently be used by the participating nodes.
 Keyspace – If you are coming from a relational database, then the schema is the respective keyspace in Cassandra. The keyspace is the outermost container for data in Cassandra. The main attributes to set per keyspace are the Replication Factor, the Replica Placement Strategy and the Column Families
 Column Family – Column Families in Cassandra are like tables in Relational Databases. Each Column Family contains a collection of rows which are represented by a Map<RowKey, SortedMap<ColumnKey, ColumnValue>>. The key gives the ability to access related data together
 Column – A column in Cassandra is a data structure which contains a column name, a value and a timestamp. The columns and the number of columns in each row may vary in contrast with a relational database where data are well structured
